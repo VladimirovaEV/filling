@@ -6,7 +6,7 @@ export class Station {
     #filling = [];
     #ready = [];
 
-    constructor(typeStation = [], renderApp = null) {
+    constructor(typeStation, renderApp = null) {
         this.typeStation = typeStation;
         this.renderApp = renderApp;
         this.renderStation = null;
@@ -18,7 +18,19 @@ export class Station {
         return this.#queue;
     }
     init() {
+        this.addFilling();
+        setInterval(() => {
+            this.checkQueueToFilling();
+        }, 2000);
+    }
+    addFilling() {
         for (const optionStation of this.typeStation) {
+            if (!optionStation.count) {
+                optionStation.count = 1;
+            }
+            if (!optionStation.speed) {
+                optionStation.speed = 5;
+            }
             for (let i = 0; i < optionStation.count; i++) {
                 this.#filling.push(new Column(optionStation.type, optionStation.speed))
             }
@@ -26,9 +38,6 @@ export class Station {
         if (this.renderApp) {
             this.renderStation = new RenderStation(this.renderApp, this);
         }
-        setInterval(() => {
-            this.checkQueueToFilling();
-        }, 2000);
     }
     checkQueueToFilling() {
         if (this.#queue.length) {
